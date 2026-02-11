@@ -46,9 +46,6 @@ Academic Project – Android Cloud Application
 
 ## ✨ Developed By
 - Ambika Ambekar  
-- Rudrayani Usturge  
-- Sanchita Bera  
-- Tanvi Shendge  
 
 ---
 
