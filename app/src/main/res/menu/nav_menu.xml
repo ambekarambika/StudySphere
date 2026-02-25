@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <group android:checkableBehavior="single">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/baseline_home_24"
+        android:title="Dashboard" />
+
+    <item
+        android:id="@+id/nav_assignments"
+        android:icon="@drawable/outline_assignment_24"
+        android:title="Assignments / Notes" />
+
+    <item
+        android:id="@+id/nav_notices"
+        android:icon="@drawable/outline_add_notes_24"
+        android:title="Notices" />
+
+    <item
+        android:id="@+id/nav_circulars"
+        android:icon="@drawable/outline_event_24"
+        android:title="Circulars" />
+
+    <item
+        android:id="@+id/nav_timetable"
+        android:icon="@drawable/outline_event_note_24"
+        android:title="Timetable" />
+
+    <item
+        android:id="@+id/nav_seminars"
+        android:icon="@drawable/outline_event_24"
+        android:title="Seminar Notices" />
+
+    <item
+        android:id="@+id/nav_events"
+        android:icon="@drawable/outline_event_24"
+        android:title="Events" />
+  </group>
+
+  <item
+      android:id="@+id/nav_logout"
+      android:title="Logout" />
+
+</menu>

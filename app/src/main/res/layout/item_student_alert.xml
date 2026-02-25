@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_card"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp"
+    android:elevation="2dp">
+
+    <TextView
+        android:id="@+id/alertTitle"
+        android:textSize="15sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Alert Message"/>
+    <TextView
+        android:id="@+id/alertType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Alert Type"
+        android:textSize="14sp"
+        android:textColor="#666"/>
+
+    <TextView
+        android:id="@+id/alertDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Alert Date"
+        android:textSize="12sp"
+        android:textColor="#999"/>
+</LinearLayout>
