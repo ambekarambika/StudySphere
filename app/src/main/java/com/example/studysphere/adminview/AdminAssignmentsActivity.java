@@ -2,16 +2,20 @@ package com.example.studysphere.adminview;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.widget.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.studysphere.R;
-import com.google.firebase.firestore.*;
-import com.google.firebase.storage.*;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.*;
 
 public class AdminAssignmentsActivity extends AppCompatActivity {
@@ -19,12 +23,11 @@ public class AdminAssignmentsActivity extends AppCompatActivity {
     private EditText edtTitle, edtDescription, edtDeadline, edtClass;
     private Button btnChooseFile, btnUpload;
     private RecyclerView recyclerAssignments;
-    private Uri fileUri = null;
     private FirebaseFirestore firestore;
-    private StorageReference storageRef;
     private List<AssignmentModel> list = new ArrayList<>();
     private AssignmentAdapter adapter;
     private static final int PICK_FILE = 1001;
+    private String imageBase64 = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +43,13 @@ public class AdminAssignmentsActivity extends AppCompatActivity {
         recyclerAssignments = findViewById(R.id.recyclerAssignments);
 
         firestore = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference("assignments");
 
         recyclerAssignments.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new AssignmentAdapter(list,
-                (id, fileUrl) -> deleteAssignment(id, fileUrl),
-                model -> {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(model.fileUrl));
-                    startActivity(intent);
-                });
+                id -> deleteAssignment(id),
+                model -> Toast.makeText(this, model.title, Toast.LENGTH_SHORT).show());
+
         recyclerAssignments.setAdapter(adapter);
 
         btnChooseFile.setOnClickListener(v -> chooseFile());
@@ -61,22 +60,37 @@ public class AdminAssignmentsActivity extends AppCompatActivity {
 
     private void chooseFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
+        intent.setType("image/*");
         startActivityForResult(intent, PICK_FILE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == PICK_FILE && resultCode == RESULT_OK && data != null) {
-            fileUri = data.getData();
-            Toast.makeText(this, "File selected: " + fileUri.getLastPathSegment(), Toast.LENGTH_SHORT).show();
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+                byte[] imageBytes = baos.toByteArray();
+
+                imageBase64 = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                Toast.makeText(this, "Image selected", Toast.LENGTH_SHORT).show();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Image error", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     private void uploadAssignment() {
-        if (fileUri == null || edtTitle.getText().toString().trim().isEmpty()) {
-            Toast.makeText(this, "Please select a file and enter details", Toast.LENGTH_SHORT).show();
+
+        if (imageBase64 == null || edtTitle.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Select image & enter details", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -86,71 +100,67 @@ public class AdminAssignmentsActivity extends AppCompatActivity {
         dialog.show();
 
         String id = UUID.randomUUID().toString();
-        StorageReference fileRef = storageRef.child(id + "_" + Objects.requireNonNull(fileUri.getLastPathSegment()));
 
-        fileRef.putFile(fileUri).addOnSuccessListener(taskSnapshot ->
-                fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    AssignmentModel model = new AssignmentModel(
-                            id,
-                            edtTitle.getText().toString(),
-                            edtDescription.getText().toString(),
-                            edtDeadline.getText().toString(),
-                            edtClass.getText().toString(),
-                            uri.toString(),
-                            System.currentTimeMillis()
-                    );
+        AssignmentModel model = new AssignmentModel(
+                id,
+                edtTitle.getText().toString(),
+                edtDescription.getText().toString(),
+                edtDeadline.getText().toString(),
+                normalizeClass(edtClass.getText().toString()),
+                imageBase64,
+                System.currentTimeMillis()
+        );
 
-                    firestore.collection("assignments").document(id)
-                            .set(model)
-                            .addOnSuccessListener(aVoid -> {
-                                dialog.dismiss();
-                                Toast.makeText(this, "Uploaded successfully", Toast.LENGTH_SHORT).show();
-                                loadAssignments();
-                            })
-                            .addOnFailureListener(e -> {
-                                dialog.dismiss();
-                                Toast.makeText(this, "Failed to upload: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
+        firestore.collection("assignments").document(id)
+                .set(model)
+                .addOnSuccessListener(aVoid -> {
+                    dialog.dismiss();
+                    Toast.makeText(this, "Uploaded successfully", Toast.LENGTH_SHORT).show();
+                    clearFields();
+                    loadAssignments();
                 })
-        ).addOnFailureListener(e -> {
-            dialog.dismiss();
-            Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        });
+                .addOnFailureListener(e -> {
+                    dialog.dismiss();
+                    Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void loadAssignments() {
         firestore.collection("assignments")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     list.clear();
-                    list.addAll(queryDocumentSnapshots.toObjects(AssignmentModel.class));
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        AssignmentModel model = doc.toObject(AssignmentModel.class);
+                        list.add(model);
+                    }
                     adapter.notifyDataSetChanged();
                 });
     }
 
-    private void deleteAssignment(String id, String fileUrl) {
-        ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Deleting...");
-        dialog.setCancelable(false);
-        dialog.show();
-
-        StorageReference fileRef = FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl);
-        fileRef.delete()
-                .addOnSuccessListener(unused -> firestore.collection("assignments").document(id)
-                        .delete()
-                        .addOnSuccessListener(aVoid -> {
-                            dialog.dismiss();
-                            Toast.makeText(this, "Deleted successfully", Toast.LENGTH_SHORT).show();
-                            loadAssignments();
-                        })
-                        .addOnFailureListener(e -> {
-                            dialog.dismiss();
-                            Toast.makeText(this, "Failed to delete Firestore record", Toast.LENGTH_SHORT).show();
-                        }))
-                .addOnFailureListener(e -> {
-                    dialog.dismiss();
-                    Toast.makeText(this, "Failed to delete file", Toast.LENGTH_SHORT).show();
+    private void deleteAssignment(String id) {
+        firestore.collection("assignments").document(id)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show();
+                    loadAssignments();
                 });
+    }
+
+    private void clearFields() {
+        edtTitle.setText("");
+        edtDescription.setText("");
+        edtDeadline.setText("");
+        edtClass.setText("");
+        imageBase64 = null;
+    }
+
+    // Normalize class name
+    private String normalizeClass(String className) {
+        if (className == null) return "";
+        return className
+                .replaceAll("[^a-zA-Z0-9]", "") // remove spaces, hyphens
+                .toUpperCase()
+                .trim();
     }
 }

@@ -8,30 +8,19 @@
     android:padding="16dp"
     android:background="#673AB7">
 
-    <ImageView
-        android:id="@+id/nav_header_image"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:src="@drawable/outline_account_circle_24"
-        android:contentDescription="Profile Icon"
-        app:tint="@android:color/white" />
-
     <TextView
         android:id="@+id/nav_header_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Admin User"
-        android:textColor="@android:color/white"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:layout_marginTop="8dp" />
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/nav_header_email"
+        android:textSize="14sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="admin@mit.edu"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
+        android:textColor="@color/white"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

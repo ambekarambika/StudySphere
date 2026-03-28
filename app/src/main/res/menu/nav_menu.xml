@@ -36,6 +36,11 @@
         android:id="@+id/nav_events"
         android:icon="@drawable/outline_event_24"
         android:title="Events" />
+
+    <item
+        android:id="@+id/nav_pbl"
+        android:icon="@drawable/twotone_app_shortcut_24"
+        android:title="PBL" />
   </group>
 
   <item

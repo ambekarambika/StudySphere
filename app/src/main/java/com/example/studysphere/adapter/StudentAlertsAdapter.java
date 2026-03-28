@@ -16,7 +16,7 @@ import java.util.Locale;
 
 public class StudentAlertsAdapter extends RecyclerView.Adapter<StudentAlertsAdapter.ViewHolder> {
 
-    private List<com.example.studysphere.model.StudentAlertModel> alertList;
+    private List<StudentAlertModel> alertList;
 
     public StudentAlertsAdapter(List<StudentAlertModel> alertList) {
         this.alertList = alertList;

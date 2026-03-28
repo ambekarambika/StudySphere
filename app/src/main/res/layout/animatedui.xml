@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@android:color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <!-- My Students -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="12dp"
+            android:backgroundTint="#673AB7">
+
+            <TextView
+                android:id="@+id/txtMyStudents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My Students: 0"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:padding="16dp"
+                />
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- Total Students -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/txtTotalStudents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total Students: 0"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:padding="16dp"/>
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- Assignments -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/txtTotalAssignments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Assignments: 0"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:padding="16dp"/>
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- Alerts -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp">
+
+            <TextView
+                android:id="@+id/txtTotalAlerts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Alerts: 0"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:padding="16dp"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerStudents"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</ScrollView>

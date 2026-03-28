@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.drawerlayout.widget.DrawerLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@android:color/white"
+    android:padding="1dp">
+<androidx.drawerlayout.widget.DrawerLayout
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -30,14 +35,30 @@
                     android:textSize="20sp" />
 
 
-                <ImageButton
-                    android:id="@+id/btnAlerts"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="end"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/outline_notifications_24"
-                    android:contentDescription="Alerts" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end">
+
+                    <ImageButton
+                        android:id="@+id/btnAlerts"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/outline_notifications_24"
+                        android:contentDescription="Alerts" />
+
+                    <TextView
+                        android:id="@+id/txtBadge"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="top|end"
+                        android:background="@drawable/badge_bg"
+                        android:gravity="center"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:visibility="gone"/>
+                </FrameLayout>
             </androidx.appcompat.widget.Toolbar>
 
 
@@ -52,7 +73,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
-            app:headerLayout="@layout/nav_header"
+            app:headerLayout="@layout/nav_header_student"
             app:menu="@menu/menu_student_dashboard" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
+</ScrollView>

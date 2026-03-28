@@ -1,7 +1,8 @@
 package com.example.studysphere.adminview;
 
-import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.My
     private final DeleteListener deleteListener;
     private final ViewListener viewListener;
 
-    public interface DeleteListener { void onDelete(String id, String fileUrl); }
+    public interface DeleteListener { void onDelete(String id); }
     public interface ViewListener { void onView(AssignmentModel m); }
 
     public AssignmentAdapter(List<AssignmentModel> list,
@@ -26,11 +27,6 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.My
         this.list = list;
         this.deleteListener = deleteListener;
         this.viewListener = viewListener;
-    }
-
-    public void setAssignments(List<AssignmentModel> newList) {
-        this.list = newList;
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -45,29 +41,38 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.My
         AssignmentModel m = list.get(position);
 
         holder.txtTitle.setText(m.title);
-        holder.txtClass.setText("Class: " + m.className);
+        holder.txtClass.setText("Class: " + m.targetClass);
         holder.txtDeadline.setText("Deadline: " + m.deadline);
 
-        holder.btnView.setOnClickListener(v -> viewListener.onView(m));
-        holder.btnDelete.setOnClickListener(v -> deleteListener.onDelete(m.id, m.fileUrl));
+        try {
+            if (m.imageBase64 != null && !m.imageBase64.isEmpty()) {
+                byte[] decodedBytes = Base64.decode(m.imageBase64, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                holder.imgAssignment.setImageBitmap(bitmap);
+            }
+        } catch (Exception e) {
+            holder.imgAssignment.setImageResource(R.drawable.ic_launcher_background);
+        }
+
+        holder.btnDelete.setOnClickListener(v -> deleteListener.onDelete(m.id));
+        holder.itemView.setOnClickListener(v -> viewListener.onView(m));
     }
 
     @Override
-    public int getItemCount() {
-        return list.size();
-    }
+    public int getItemCount() { return list.size(); }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtDeadline, txtClass;
-        Button btnDelete, btnView;
+        ImageView imgAssignment;
+        Button btnDelete;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             txtTitle = itemView.findViewById(R.id.txtTitle);
             txtDeadline = itemView.findViewById(R.id.txtDeadline);
             txtClass = itemView.findViewById(R.id.txtClass);
+            imgAssignment = itemView.findViewById(R.id.imgAssignment);
             btnDelete = itemView.findViewById(R.id.btnDelete);
-            btnView = itemView.findViewById(R.id.btnView);
         }
     }
 }

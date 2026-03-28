@@ -5,21 +5,21 @@ public class AssignmentModel {
     public String title;
     public String description;
     public String deadline;
-    public String className;
-    public String fileUrl; // now stores file URL instead of Base64
+    public String targetClass;
+    public String imageBase64; // store image here
     public long timestamp;
 
     public AssignmentModel() {}
 
     public AssignmentModel(String id, String title, String description,
-                           String deadline, String className,
-                           String fileUrl, long timestamp) {
+                           String deadline, String targetClass,
+                           String imageBase64, long timestamp) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.deadline = deadline;
-        this.className = className;
-        this.fileUrl = fileUrl;
+        this.targetClass = targetClass;
+        this.imageBase64 = imageBase64;
         this.timestamp = timestamp;
     }
 }

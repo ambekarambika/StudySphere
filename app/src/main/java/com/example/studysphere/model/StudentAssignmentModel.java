@@ -1,8 +1,11 @@
 package com.example.studysphere.model;
 
-public class StudentAssignmentModel {
-    public String id, title, description, deadline, className, fileUrl;
+public class StudentAssignmentModel implements java.io.Serializable{
+    public String id, title, description, deadline, targetClass, fileUrl;
     public long timestamp;
+    public String imageBase64;
+    public boolean isImportant = false;
+
 
     public StudentAssignmentModel() {} // Firestore
 
@@ -12,7 +15,7 @@ public class StudentAssignmentModel {
         this.title = title;
         this.description = description;
         this.deadline = deadline;
-        this.className = className;
+        this.targetClass = className;
         this.fileUrl = fileUrl;
         this.timestamp = timestamp;
     }

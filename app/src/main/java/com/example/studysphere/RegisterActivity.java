@@ -118,7 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         startActivity(new Intent(RegisterActivity.this, AdminDashboardActivity.class));
                                     } else if (role.equals("Student")) {
                                         // Student email → go to Student dashboard
-                                        startActivity(new Intent(RegisterActivity.this, StudentHomeActivity.class));
+                                        startActivity(new Intent(RegisterActivity.this, StudentProfileSetupActivity.class));
                                     } else {
                                         // Safety fallback (should not happen)
                                         Toast.makeText(this, "Unknown role, cannot redirect", Toast.LENGTH_SHORT).show();

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.studysphere.adapter.StudentAlertsAdapter;
 import com.example.studysphere.model.StudentAlertModel;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
 import com.example.studysphere.R;
 
@@ -18,6 +19,7 @@ public class StudentAlertsActivity extends AppCompatActivity {
     private StudentAlertsAdapter adapter;
     private List<StudentAlertModel> alertList = new ArrayList<>();
     private FirebaseFirestore db;
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +33,16 @@ public class StudentAlertsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         db = FirebaseFirestore.getInstance();
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         loadAlerts();
+        markAlertsAsRead();
     }
 
     private void loadAlerts() {
-        List<String> collections = Arrays.asList("assignments", "AcademicUpdates", "CampusActivities", "Timetables");
+        List<String> collections = Arrays.asList(
+                "assignments", "AcademicUpdates", "CampusActivities", "Timetables"
+        );
 
         for (String col : collections) {
             db.collection(col)
@@ -43,11 +50,11 @@ public class StudentAlertsActivity extends AppCompatActivity {
                     .addSnapshotListener((snapshots, e) -> {
                         if (e != null || snapshots == null) return;
 
-
                         alertList.removeIf(alert -> alert.getType().equals(col));
 
                         for (DocumentSnapshot doc : snapshots.getDocuments()) {
                             StudentAlertModel alert = new StudentAlertModel(
+                                    doc.getId(),
                                     doc.getString("title"),
                                     doc.getString("description"),
                                     doc.contains("timestamp") ? doc.getLong("timestamp") : System.currentTimeMillis(),
@@ -56,12 +63,27 @@ public class StudentAlertsActivity extends AppCompatActivity {
                             alertList.add(alert);
                         }
 
-
-                        Collections.sort(alertList, (a, b) -> Long.compare(b.getTimestamp(), a.getTimestamp()));
+                        Collections.sort(alertList, (a, b) ->
+                                Long.compare(b.getTimestamp(), a.getTimestamp()));
 
                         adapter.notifyDataSetChanged();
                     });
         }
     }
 
+    // Mark alerts as read
+    private void markAlertsAsRead() {
+        List<String> collections = Arrays.asList(
+                "assignments", "AcademicUpdates", "CampusActivities", "Timetables"
+        );
+
+        for (String col : collections) {
+            db.collection(col).get().addOnSuccessListener(snapshots -> {
+                for (DocumentSnapshot doc : snapshots.getDocuments()) {
+                    db.collection(col).document(doc.getId())
+                            .update("readBy", FieldValue.arrayUnion(uid));
+                }
+            });
+        }
+    }
 }

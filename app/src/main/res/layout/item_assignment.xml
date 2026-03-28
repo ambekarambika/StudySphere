@@ -13,9 +13,7 @@
         android:id="@+id/imgAssignment"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:scaleType="centerCrop"
-        android:background="#E0E0E0"
-        android:visibility="gone"/>
+        android:scaleType="centerCrop"/>
 
     <!-- Title -->
     <TextView
